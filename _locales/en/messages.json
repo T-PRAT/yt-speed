@@ -1,0 +1,32 @@
+{
+  "extensionName": {
+    "message": "YouTube Speed"
+  },
+  "extensionDescription": {
+    "message": "Minimal YouTube playback speed control with keyboard shortcuts"
+  },
+  "controlInBar": {
+    "message": "Control in YouTube bar"
+  },
+  "controlInBarDesc": {
+    "message": "A speed button is added in the video player control bar."
+  },
+  "changeSpeed": {
+    "message": "Change speed"
+  },
+  "changeSpeedDesc": {
+    "message": "• <span class=\"highlight\">Click</span> on the button to open the menu<br>• Use the <span class=\"highlight\">mouse wheel</span> over the button"
+  },
+  "keyboardShortcuts": {
+    "message": "Keyboard shortcuts"
+  },
+  "increaseDecrease": {
+    "message": "Increase / Decrease"
+  },
+  "increaseSpeed": {
+    "message": "Increase playback speed"
+  },
+  "decreaseSpeed": {
+    "message": "Decrease playback speed"
+  }
+}

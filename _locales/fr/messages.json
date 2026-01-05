@@ -1,0 +1,32 @@
+{
+  "extensionName": {
+    "message": "Vitesse YouTube"
+  },
+  "extensionDescription": {
+    "message": "Contrôle minimal de la vitesse de lecture YouTube avec des raccourcis clavier"
+  },
+  "controlInBar": {
+    "message": "Contrôle dans la barre YouTube"
+  },
+  "controlInBarDesc": {
+    "message": "Un bouton de vitesse est ajouté dans la barre de contrôle du lecteur vidéo."
+  },
+  "changeSpeed": {
+    "message": "Changer la vitesse"
+  },
+  "changeSpeedDesc": {
+    "message": "• <span class=\"highlight\">Cliquez</span> sur le bouton pour ouvrir le menu<br>• Utilisez la <span class=\"highlight\">molette de la souris</span> au-dessus du bouton"
+  },
+  "keyboardShortcuts": {
+    "message": "Raccourcis clavier"
+  },
+  "increaseDecrease": {
+    "message": "Augmenter / Diminuer"
+  },
+  "increaseSpeed": {
+    "message": "Augmenter la vitesse de lecture"
+  },
+  "decreaseSpeed": {
+    "message": "Diminuer la vitesse de lecture"
+  }
+}
