@@ -66,14 +66,14 @@ npm run zip           # → Both
 
    Chrome **manually reviews** each permission. Explain:
 
-   - `storage`: To save playback speed per video
+   - `storage`: To save playback speed preferences
    - `activeTab`: To control speed on the active YouTube tab
-   - `tabs`: To send messages from keyboard shortcuts
+   - `tabs`: To enable global keyboard shortcuts (Alt+Up/Down) to communicate with tabs
    - `host_permissions` (youtube.com): To inject controls into YouTube
 
    **Example justification**:
 
-   > "The extension requires access to YouTube to inject a speed control into the video player. Local storage allows remembering the preferred speed per video. Tab access is necessary for keyboard shortcuts to work."
+   > "The extension requires access to YouTube to inject a speed control into the video player. Local storage allows remembering the preferred playback speed. Tab access is necessary for global keyboard shortcuts (Alt+Up/Down) to work from anywhere in the browser."
 
 6. **Publish**
 

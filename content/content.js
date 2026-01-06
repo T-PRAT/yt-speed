@@ -7,7 +7,6 @@ let videoElement = null;
 let currentSpeed = DEFAULT_SPEED;
 let stepSize = DEFAULT_STEP;
 let speedControlInjected = false;
-let currentVideoId = null;
 
 function init() {
   console.log('[YT Speed] Initializing...');
@@ -27,20 +26,9 @@ function findVideoElement() {
   if (video && video !== videoElement) {
     videoElement = video;
     console.log('[YT Speed] Found video element');
-
-    const videoId = getVideoId();
-    if (videoId && videoId !== currentVideoId) {
-      currentVideoId = videoId;
-      loadSavedSpeed(videoId);
-    }
-
+    loadSavedSpeed();
     videoElement.addEventListener('ratechange', handleSpeedChange);
   }
-}
-
-function getVideoId() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get('v');
 }
 
 function setupStorage() {
@@ -49,31 +37,15 @@ function setupStorage() {
   });
 }
 
-function loadSavedSpeed(videoId) {
-  chrome.storage.local.get(['lastSpeedPerVideo', 'speed'], (result) => {
-    let savedSpeed = result.speed || DEFAULT_SPEED;
-
-    if (result.lastSpeedPerVideo && result.lastSpeedPerVideo[videoId]) {
-      savedSpeed = result.lastSpeedPerVideo[videoId];
-    }
-
+function loadSavedSpeed() {
+  chrome.storage.local.get(['speed'], (result) => {
+    const savedSpeed = result.speed || DEFAULT_SPEED;
     setSpeed(savedSpeed, false);
   });
 }
 
-function saveSpeed(speed, videoId = null) {
-  const data = { speed };
-
-  if (videoId) {
-    chrome.storage.local.get('lastSpeedPerVideo', (result) => {
-      const lastSpeeds = result.lastSpeedPerVideo || {};
-      lastSpeeds[videoId] = speed;
-      data.lastSpeedPerVideo = lastSpeeds;
-      chrome.storage.local.set(data);
-    });
-  } else {
-    chrome.storage.local.set(data);
-  }
+function saveSpeed(speed) {
+  chrome.storage.local.set({ speed });
 }
 
 function setSpeed(speed, save = true) {
@@ -86,7 +58,7 @@ function setSpeed(speed, save = true) {
   updateSpeedDisplay(speed);
 
   if (save) {
-    saveSpeed(speed, currentVideoId);
+    saveSpeed(speed);
   }
 }
 
@@ -336,6 +308,8 @@ function setupMutationObserver() {
 }
 
 function setupKeyboardShortcuts() {
+  // Page-level shortcuts: . and , (only work when not typing in text fields)
+  // Global shortcuts: Alt+Up and Alt+Down (handled by background.js, work everywhere)
   document.addEventListener('keydown', (e) => {
     const activeElement = document.activeElement;
     const isInputFocused = activeElement && (

@@ -20,13 +20,13 @@
   "keyboardShortcuts": {
     "message": "Keyboard shortcuts"
   },
-  "increaseDecrease": {
-    "message": "Increase / Decrease"
-  },
   "increaseSpeed": {
-    "message": "Increase playback speed"
+    "message": "Increase speed"
   },
   "decreaseSpeed": {
-    "message": "Decrease playback speed"
+    "message": "Decrease speed"
+  },
+  "shortcutNote": {
+    "message": "Note: . and , work only when not typing. Alt+Up/Down work everywhere."
   }
 }

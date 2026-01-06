@@ -20,13 +20,13 @@
   "keyboardShortcuts": {
     "message": "Raccourcis clavier"
   },
-  "increaseDecrease": {
-    "message": "Augmenter / Diminuer"
-  },
   "increaseSpeed": {
-    "message": "Augmenter la vitesse de lecture"
+    "message": "Augmenter la vitesse"
   },
   "decreaseSpeed": {
-    "message": "Diminuer la vitesse de lecture"
+    "message": "Diminuer la vitesse"
+  },
+  "shortcutNote": {
+    "message": "Note : . et , fonctionnent uniquement hors des champs de texte. Alt+Haut/Bas fonctionnent partout."
   }
 }
