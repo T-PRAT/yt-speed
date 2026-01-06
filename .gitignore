@@ -1,0 +1,22 @@
+# Build outputs
+dist/
+*.zip
+*.xpi
+
+# Node modules (si vous ajoutez des dépendances plus tard)
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*

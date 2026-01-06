@@ -14,23 +14,31 @@ A minimal browser extension for YouTube that provides playback speed control wit
 
 ## Installation
 
-### Chrome
+### Chrome (Development)
 
-1. Download or clone this repository
+1. Build the Chrome version:
+   ```bash
+   npm run build:chrome
+   ```
 2. Open Chrome and navigate to `chrome://extensions/`
 3. Enable "Developer mode" (toggle in top-right corner)
 4. Click "Load unpacked"
-5. Select the `yt-speed` folder
+5. Select the `dist/chrome` folder
 6. Go to YouTube to start using the extension
 
-### Firefox
+### Firefox (Development)
 
-1. Download or clone this repository
+1. Build the Firefox version:
+   ```bash
+   npm run build:firefox
+   ```
 2. Open Firefox and navigate to `about:debugging`
 3. Click "This Firefox"
 4. Click "Load Temporary Add-on..."
-5. Select the `manifest.json` file in the `yt-speed` folder
+5. Select the `manifest.json` file in the `dist/firefox` folder
 6. Go to YouTube to start using the extension
+
+**Note:** For quick local testing, you can also use the root `manifest.json` (configured for Firefox) directly in Firefox.
 
 ## Usage
 
@@ -41,6 +49,7 @@ A speed control button is injected into YouTube's video player control bar (righ
 ### Extension Popup
 
 Click the extension icon in the browser toolbar to see:
+
 - Extension logo and name
 - Instructions for using the speed control
 - Keyboard shortcuts reference
@@ -57,12 +66,44 @@ The popup displays information only - all controls are in the YouTube player.
 
 ### Keyboard Shortcuts
 
-| Shortcut | Action |
-|----------|--------|
-| `.` | Increase speed |
-| `,` | Decrease speed |
+| Shortcut | Action         |
+| -------- | -------------- |
+| `.`      | Increase speed |
+| `,`      | Decrease speed |
 
 Note: Keyboard shortcuts only work when you're not typing in a text field (search bar, comments, etc.).
+
+## Building for Publication
+
+### Quick Start
+
+```bash
+# Install dependencies (if needed)
+npm install
+
+# Build both versions
+npm run build
+
+# Or build separately
+npm run build:chrome
+npm run build:firefox
+
+# Create ZIP packages for stores
+npm run zip:chrome    # → dist/chrome.zip
+npm run zip:firefox   # → dist/firefox.zip
+npm run zip           # → Both packages
+```
+
+### Build Outputs
+
+- `dist/chrome/` - Chrome version (Manifest V3 with service_worker)
+- `dist/firefox/` - Firefox version (Manifest V3 with background.scripts)
+- `dist/chrome.zip` - Ready for Chrome Web Store
+- `dist/firefox.zip` - Ready for Firefox Add-ons
+
+### Publishing
+
+See [PUBLISHING.md](./PUBLISHING.md) for detailed instructions on publishing to Chrome Web Store and Firefox Add-ons.
 
 ## Development
 
@@ -70,25 +111,36 @@ Note: Keyboard shortcuts only work when you're not typing in a text field (searc
 
 ```
 yt-speed/
-├── manifest.json          # Extension configuration
+├── manifest.json              # Development manifest (Firefox config)
+├── manifest.chrome.json       # Chrome build manifest (service_worker)
+├── manifest.firefox.json       # Firefox build manifest (background.scripts)
+├── package.json                # NPM scripts for building
+├── build.js                   # Build script
+├── zip.js                     # ZIP creation script
 ├── content/
-│   └── content.js        # YouTube integration
+│   └── content.js            # YouTube integration
 ├── background/
-│   └── background.js     # Background script
+│   └── background.js         # Background script
 ├── popup/
-│   ├── popup.html        # Popup UI
-│   ├── popup.css         # Popup styles
-│   └── popup.js         # Popup logic
+│   ├── popup.html            # Popup UI
+│   ├── popup.css             # Popup styles
+│   └── popup.js              # Popup logic
 ├── _locales/
 │   ├── en/
-│   │   └── messages.json # English translations
+│   │   └── messages.json     # English translations
 │   └── fr/
-│       └── messages.json # French translations
+│       └── messages.json     # French translations
 ├── icons/
 │   ├── icon16.png
 │   ├── icon48.png
 │   └── icon128.png
-└── README.md
+├── dist/                      # Build outputs (gitignored)
+│   ├── chrome/               # Chrome build
+│   ├── firefox/              # Firefox build
+│   ├── chrome.zip            # Chrome package
+│   └── firefox.zip           # Firefox package
+├── README.md
+└── PUBLISHING.md             # Publishing guide
 ```
 
 ### Building Icons
@@ -113,6 +165,7 @@ To add a new language:
 ## Permissions
 
 The extension requires:
+
 - `storage`: To save speed preferences per video
 - `activeTab`: To control speed on the current YouTube tab
 - `https://www.youtube.com/*`: To inject controls on YouTube

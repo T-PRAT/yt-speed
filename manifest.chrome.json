@@ -19,9 +19,7 @@
     "https://m.youtube.com/*"
   ],
   "background": {
-    "scripts": [
-      "background/background.js"
-    ]
+    "service_worker": "background/background.js"
   },
   "content_scripts": [
     {
@@ -29,9 +27,7 @@
         "https://www.youtube.com/*",
         "https://m.youtube.com/*"
       ],
-      "js": [
-        "content/content.js"
-      ],
+      "js": ["content/content.js"],
       "run_at": "document_idle"
     }
   ],

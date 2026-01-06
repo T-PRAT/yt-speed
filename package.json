@@ -1,0 +1,24 @@
+{
+	"name": "yt-speed",
+	"version": "1.0.0",
+	"description": "Minimal YouTube playback speed control with keyboard shortcuts",
+	"scripts": {
+		"build": "node build.js",
+		"build:chrome": "node build.js chrome",
+		"build:firefox": "node build.js firefox",
+		"clean": "rm -rf dist",
+		"zip:chrome": "npm run build:chrome && node zip.js chrome",
+		"zip:firefox": "npm run build:firefox && node zip.js firefox",
+		"zip": "npm run zip:chrome && npm run zip:firefox"
+	},
+	"keywords": [
+		"youtube",
+		"speed",
+		"playback",
+		"extension",
+		"chrome",
+		"firefox"
+	],
+	"author": "",
+	"license": "MIT"
+}

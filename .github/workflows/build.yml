@@ -1,0 +1,96 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Build Chrome
+        run: npm run build:chrome
+
+      - name: Build Firefox
+        run: npm run build:firefox
+
+      - name: Create Chrome ZIP
+        run: |
+          cd dist/chrome
+          zip -r ../chrome.zip .
+
+      - name: Create Firefox ZIP
+        run: |
+          cd dist/firefox
+          zip -r ../firefox.zip .
+
+      - name: Get version from manifest
+        id: version
+        run: |
+          VERSION=$(node -p "require('./manifest.chrome.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+
+      - name: Get commit info
+        id: commit
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          COMMIT_SHA=$(git rev-parse --short HEAD)
+          echo "message<<EOF" >> $GITHUB_OUTPUT
+          echo "$COMMIT_MSG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
+
+      - name: Upload Chrome artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: chrome-extension
+          path: dist/chrome.zip
+          retention-days: 30
+
+      - name: Upload Firefox artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: firefox-extension
+          path: dist/firefox.zip
+          retention-days: 30
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.version.outputs.version }}-${{ steps.commit.outputs.sha }}
+          name: Release v${{ steps.version.outputs.version }} (${{ steps.commit.outputs.sha }})
+          body: |
+            ## Version ${{ steps.version.outputs.version }}
+
+            **Commit:** `${{ steps.commit.outputs.sha }}`
+            **Message:** ${{ steps.commit.outputs.message }}
+
+            ### Downloads
+
+            - **Chrome Extension** - Ready for [Chrome Web Store](https://chrome.google.com/webstore/devconsole)
+            - **Firefox Extension** - Ready for [Firefox Add-ons](https://addons.mozilla.org/developers/)
+
+            ### Installation Instructions
+
+            1. **Chrome**: Download `chrome.zip` and upload to [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole)
+            2. **Firefox**: Download `firefox.zip` and upload to [Firefox Add-ons Developer Hub](https://addons.mozilla.org/developers/)
+          files: |
+            dist/chrome.zip
+            dist/firefox.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
