@@ -3,7 +3,7 @@
     "message": "YouTube Playback Speed"
   },
   "extensionDescription": {
-    "message": "Minimal YouTube playback speed control with keyboard shortcuts"
+    "message": "YouTube playback speed control"
   },
   "controlInBar": {
     "message": "Control in YouTube bar"
@@ -28,5 +28,20 @@
   },
   "shortcutNote": {
     "message": "Note: . and , work only when not typing. Alt+Up/Down work everywhere."
+  },
+  "settings": {
+    "message": "Settings"
+  },
+  "buttonPosition": {
+    "message": "Button position"
+  },
+  "positionLeft": {
+    "message": "Left side"
+  },
+  "positionRightStart": {
+    "message": "Right side (beginning)"
+  },
+  "positionRightEnd": {
+    "message": "Right side (end)"
   }
 }

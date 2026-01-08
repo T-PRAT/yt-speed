@@ -1,9 +1,9 @@
 {
   "extensionName": {
-    "message": "Vitesse de lecture YouTube"
+    "message": "YouTube speed"
   },
   "extensionDescription": {
-    "message": "Contrôle minimal de la vitesse de lecture YouTube avec des raccourcis clavier"
+    "message": "Contrôle de la vitesse de lecture YouTube"
   },
   "controlInBar": {
     "message": "Contrôle dans la barre YouTube"
@@ -28,5 +28,20 @@
   },
   "shortcutNote": {
     "message": "Note : . et , fonctionnent uniquement hors des champs de texte. Alt+Haut/Bas fonctionnent partout."
+  },
+  "settings": {
+    "message": "Paramètres"
+  },
+  "buttonPosition": {
+    "message": "Position du bouton"
+  },
+  "positionLeft": {
+    "message": "Côté gauche"
+  },
+  "positionRightStart": {
+    "message": "Côté droit (début)"
+  },
+  "positionRightEnd": {
+    "message": "Côté droit (fin)"
   }
 }

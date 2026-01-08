@@ -105,3 +105,51 @@ h1 {
   font-style: italic;
   line-height: 1.4;
 }
+
+.settings-section {
+  font-size: 13px;
+}
+
+.settings-section .title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #aaa;
+  margin-bottom: 12px;
+}
+
+.settings-section .setting {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-section .label {
+  color: #fff;
+  font-weight: 500;
+}
+
+.select-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+}
+
+.select-input:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.select-input:focus {
+  border-color: #3b82f6;
+}
+
+.select-input option {
+  background: #1f1f1f;
+  color: #fff;
+  padding: 8px;
+}

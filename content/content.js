@@ -7,14 +7,16 @@ let videoElement = null;
 let currentSpeed = DEFAULT_SPEED;
 let stepSize = DEFAULT_STEP;
 let speedControlInjected = false;
+let buttonPosition = 'right-start';
 
 function init() {
   findVideoElement();
-  setupStorage();
-  setupMutationObserver();
-  setupMessageListener();
-  setupKeyboardShortcuts();
-  injectSpeedControl();
+  setupStorage(() => {
+    setupMutationObserver();
+    setupMessageListener();
+    setupKeyboardShortcuts();
+    injectSpeedControl();
+  });
 }
 
 function findVideoElement() {
@@ -29,21 +31,34 @@ function findVideoElement() {
   }
 }
 
-function setupStorage() {
-  chrome.storage.local.get(['stepSize'], (result) => {
-    stepSize = result.stepSize || DEFAULT_STEP;
-  });
+function setupStorage(callback) {
+  try {
+    chrome.storage.local.get(['stepSize', 'buttonPosition'], (result) => {
+      stepSize = result && result.stepSize ? result.stepSize : DEFAULT_STEP;
+      buttonPosition = result && result.buttonPosition ? result.buttonPosition : 'right-start';
+      if (callback) callback();
+    });
+  } catch (error) {
+    if (callback) callback();
+  }
 }
 
 function loadSavedSpeed() {
-  chrome.storage.local.get(['speed'], (result) => {
-    const savedSpeed = result.speed || DEFAULT_SPEED;
-    setSpeed(savedSpeed, false);
-  });
+  try {
+    chrome.storage.local.get(['speed'], (result) => {
+      const savedSpeed = result && result.speed ? result.speed : DEFAULT_SPEED;
+      setSpeed(savedSpeed, false);
+    });
+  } catch (error) {
+    setSpeed(DEFAULT_SPEED, false);
+  }
 }
 
 function saveSpeed(speed) {
-  chrome.storage.local.set({ speed });
+  try {
+    chrome.storage.local.set({ speed });
+  } catch (error) {
+  }
 }
 
 function setSpeed(speed, save = true) {
@@ -126,10 +141,52 @@ function showSpeedIndicator(speed) {
   }, 1500);
 }
 
+function repositionButton() {
+  try {
+    const existingControl = document.querySelector('.yt-speed-control');
+    if (existingControl) {
+      existingControl.remove();
+    }
+    const existingDropdown = document.querySelector('.yt-speed-dropdown');
+    if (existingDropdown) {
+      existingDropdown.remove();
+    }
+    speedControlInjected = false;
+
+    chrome.storage.local.get(['buttonPosition'], (result) => {
+      buttonPosition = result && result.buttonPosition ? result.buttonPosition : 'right-start';
+      injectSpeedControl();
+    });
+  } catch (error) {
+  }
+}
+
 function injectSpeedControl() {
   if (speedControlInjected) return;
 
-  const controls = document.querySelector('.ytp-right-controls');
+  let controls = null;
+  let insertBeforeElement = null;
+
+  switch (buttonPosition) {
+    case 'left':
+      controls = document.querySelector('.ytp-left-controls');
+      break;
+    case 'right-start':
+      controls = document.querySelector('.ytp-right-controls');
+      if (controls) {
+        insertBeforeElement = controls.firstChild;
+      }
+      break;
+    case 'right-end':
+      controls = document.querySelector('.ytp-right-controls');
+      break;
+    default:
+      controls = document.querySelector('.ytp-right-controls');
+      if (controls) {
+        insertBeforeElement = controls.firstChild;
+      }
+  }
+
   if (!controls) {
     setTimeout(injectSpeedControl, 500);
     return;
@@ -141,7 +198,19 @@ function injectSpeedControl() {
   }
 
   const speedControl = createSpeedControl();
-  controls.insertBefore(speedControl, controls.firstChild);
+
+  try {
+    if (buttonPosition === 'left') {
+      controls.appendChild(speedControl);
+    } else if (insertBeforeElement && controls.contains(insertBeforeElement)) {
+      controls.insertBefore(speedControl, insertBeforeElement);
+    } else {
+      controls.appendChild(speedControl);
+    }
+  } catch (error) {
+    controls.appendChild(speedControl);
+  }
+
   speedControlInjected = true;
 
   updateSpeedDisplay(currentSpeed);
@@ -259,6 +328,20 @@ function createSpeedControl() {
     }
   });
 
+  button.addEventListener('dblclick', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSpeed(1.0);
+  });
+
+  button.addEventListener('mousedown', (e) => {
+    if (e.button === 1) {
+      e.preventDefault();
+      e.stopPropagation();
+      setSpeed(1.0);
+    }
+  });
+
   return container;
 }
 
@@ -337,8 +420,6 @@ function setupMutationObserver() {
 }
 
 function setupKeyboardShortcuts() {
-  // Page-level shortcuts: . and , (only work when not typing in text fields)
-  // Global shortcuts: Alt+Up and Alt+Down (handled by background.js, work everywhere)
   document.addEventListener('keydown', (e) => {
     const activeElement = document.activeElement;
     const isInputFocused = activeElement && (
@@ -378,6 +459,11 @@ function setupMessageListener() {
 
       case 'getSpeed':
         sendResponse({ success: true, speed: currentSpeed });
+        break;
+
+      case 'repositionButton':
+        repositionButton();
+        sendResponse({ success: true });
         break;
 
       default:
