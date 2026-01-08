@@ -9,7 +9,6 @@ let stepSize = DEFAULT_STEP;
 let speedControlInjected = false;
 
 function init() {
-  console.log('[YT Speed] Initializing...');
   findVideoElement();
   setupStorage();
   setupMutationObserver();
@@ -25,7 +24,6 @@ function findVideoElement() {
 
   if (video && video !== videoElement) {
     videoElement = video;
-    console.log('[YT Speed] Found video element');
     loadSavedSpeed();
     videoElement.addEventListener('ratechange', handleSpeedChange);
   }
@@ -145,7 +143,6 @@ function injectSpeedControl() {
   const speedControl = createSpeedControl();
   controls.insertBefore(speedControl, controls.firstChild);
   speedControlInjected = true;
-  console.log('[YT Speed] Speed control injected');
 
   updateSpeedDisplay(currentSpeed);
 }
@@ -183,12 +180,46 @@ function createSpeedControl() {
   button.appendChild(speedDisplay);
   container.appendChild(button);
 
+  const tooltip = document.createElement('div');
+  tooltip.textContent = 'Scroll to change speed';
+  tooltip.style.cssText = `
+    position: fixed;
+    background: rgba(0, 0, 0, 0.4);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    white-space: nowrap;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    z-index: 2147483647;
+    font-weight: 500;
+    transform: translateX(-50%);
+  `;
+  document.body.appendChild(tooltip);
+
+  const updateTooltipPosition = () => {
+    const rect = button.getBoundingClientRect();
+    tooltip.style.left = `${rect.left + rect.width / 2}px`;
+    tooltip.style.top = `${rect.top - 30}px`;
+  };
+
+  button.addEventListener('mouseenter', () => {
+    updateTooltipPosition();
+    tooltip.style.opacity = '1';
+  });
+
+  button.addEventListener('mouseleave', () => {
+    tooltip.style.opacity = '0';
+  });
+
   const dropdown = createSpeedDropdown();
   document.body.appendChild(dropdown);
 
   button.addEventListener('click', (e) => {
     e.stopPropagation();
     e.preventDefault();
+    tooltip.style.opacity = '0';
     const isHidden = dropdown.style.display === 'none' || dropdown.style.display === '';
     closeAllDropdowns();
 
@@ -201,8 +232,6 @@ function createSpeedControl() {
     } else {
       dropdown.style.display = 'none';
     }
-
-    console.log('[YT Speed] Dropdown toggled, display:', dropdown.style.display);
   });
 
   document.addEventListener('click', (e) => {
@@ -324,22 +353,18 @@ function setupKeyboardShortcuts() {
       e.preventDefault();
       e.stopPropagation();
       adjustSpeed(-1);
-      console.log('[YT Speed] Speed decreased via ,');
     }
 
     if (e.key === '.' && !e.altKey && !e.ctrlKey && !e.metaKey) {
       e.preventDefault();
       e.stopPropagation();
       adjustSpeed(1);
-      console.log('[YT Speed] Speed increased via .');
     }
   });
 }
 
 function setupMessageListener() {
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log('[YT Speed] Received message:', message);
-
     switch (message.action) {
       case 'setSpeed':
         setSpeed(message.value);
