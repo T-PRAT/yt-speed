@@ -55,7 +55,7 @@ npm run zip           # → Both
 
    | Field              | Description                              |
    | ------------------ | ---------------------------------------- |
-   | **Name**           | YouTube Speed (or **MSG_extensionName**) |
+   | **Name**           | YouTube Rabbit (or **MSG_extensionName**) |
    | **Description**    | Detailed description of the extension    |
    | **Icons**          | Use `icons/icon128.png`                  |
    | **Screenshots**    | 1280×800 px recommended                  |

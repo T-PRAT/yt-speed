@@ -1,5 +1,5 @@
 chrome.commands.onCommand.addListener((command) => {
-  console.log('[YT Speed] Command received:', command);
+  console.log('[YouTube Rabbit] Command received:', command);
   handleCommand(command);
 });
 
@@ -27,15 +27,15 @@ async function handleCommand(command) {
         break;
 
       default:
-        console.log('[YT Speed] Unknown command:', command);
+        console.log('[YouTube Rabbit] Unknown command:', command);
         return;
     }
 
     const response = await chrome.tabs.sendMessage(tab.id, message);
-    console.log('[YT Speed] Response:', response);
+    console.log('[YouTube Rabbit] Response:', response);
   } catch (error) {
-    console.error('[YT Speed] Error handling command:', error);
+    console.error('[YouTube Rabbit] Error handling command:', error);
   }
 }
 
-console.log('[YT Speed] Background script loaded');
+console.log('[YouTube Rabbit] Background script loaded');

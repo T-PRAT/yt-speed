@@ -1,5 +1,5 @@
 {
-	"name": "yt-speed",
+	"name": "youtube-rabbit",
 	"version": "1.0.0",
 	"description": "Minimal YouTube playback speed control with keyboard shortcuts",
 	"scripts": {

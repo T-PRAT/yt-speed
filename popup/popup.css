@@ -4,11 +4,16 @@
   box-sizing: border-box;
 }
 
+html {
+  overflow: hidden;
+}
+
 body {
   width: 280px;
   background: #0f0f0f;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   color: #fff;
+  overflow: hidden;
 }
 
 .container {

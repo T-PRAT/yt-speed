@@ -1,4 +1,8 @@
-# YouTube Playback Speed Control
+# YouTube Rabbit
+
+<p align="center">
+  <img src="icons/icon128.png" alt="YouTube Rabbit Logo" width="128" height="128">
+</p>
 
 A lightweight browser extension that adds precise playback speed control to YouTube videos. Works on Chrome and Firefox.
 
@@ -14,12 +18,12 @@ A lightweight browser extension that adds precise playback speed control to YouT
 
 ### Chrome
 
-1. Download `chrome.zip` from [Releases](https://github.com/yourusername/yt-speed/releases)
+1. Download `chrome.zip` from [Releases](https://github.com/yourusername/youtube-rabbit/releases)
 2. Extract and load in `chrome://extensions/` (Developer mode)
 
 ### Firefox
 
-1. Download `firefox.zip` from [Releases](https://github.com/yourusername/yt-speed/releases)
+1. Download `firefox.zip` from [Releases](https://github.com/yourusername/youtube-rabbit/releases)
 2. Extract and load in `about:debugging` → "Load Temporary Add-on"
 
 ## 📖 Usage
