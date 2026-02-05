@@ -1,4 +1,4 @@
-# YouTube Rabbit
+<h1 align="center">YouTube Rabbit</h1>
 
 <p align="center">
   <img src="icons/icon128.png" alt="YouTube Rabbit Logo" width="128" height="128">
@@ -52,4 +52,4 @@ See [PUBLISHING.md](./PUBLISHING.md) for details.
 
 ## 📝 License
 
-MIT
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
