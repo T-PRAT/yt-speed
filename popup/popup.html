@@ -8,34 +8,21 @@
   </head>
   <body>
     <div class="container">
-      <div class="logo">
-        <img src="../icons/icon128.png" alt="YouTube Rabbit Logo" />
+      <div class="header">
+        <div class="logo">
+          <img src="../icons/icon128.png" alt="YouTube Rabbit Logo" />
+        </div>
+        <h1 data-i18n="extensionName"></h1>
       </div>
-      <h1 data-i18n="extensionName"></h1>
 
       <div class="info-section">
-        <p>
-          <span class="label" data-i18n="controlInBar"></span>
-          <span data-i18n="controlInBarDesc"></span>
-        </p>
-        <p>
-          <span class="label" data-i18n="changeSpeed"></span>
-          <span data-i18n="changeSpeedDesc"></span>
-        </p>
-      </div>
-
-      <div class="info-section separator">
-        <div class="settings-section">
-          <div class="title" data-i18n="settings"></div>
-          <div class="setting">
-            <span class="label" data-i18n="buttonPosition"></span>
-            <select id="positionSelect" class="select-input">
-              <option value="left" data-i18n="positionLeft"></option>
-              <option value="right-start" data-i18n="positionRightStart"></option>
-              <option value="right-end" data-i18n="positionRightEnd"></option>
-            </select>
+        <div class="icon-row">
+          <span class="text-part" data-i18n="controlInBarDesc1"></span>
+          <div class="icon-part">
+            <span class="speed-button-icon">1x</span>
           </div>
         </div>
+        <p data-i18n="controlInBarDesc2"></p>
       </div>
 
       <div class="info-section separator">
@@ -51,6 +38,19 @@
           </div>
           <div class="shortcut-note">
             <span data-i18n="shortcutNote"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-section separator">
+        <div class="settings-section">
+          <div class="setting">
+            <span class="label" data-i18n="buttonPosition"></span>
+            <select id="positionSelect" class="select-input">
+              <option value="left" data-i18n="positionLeft"></option>
+              <option value="right-start" data-i18n="positionRightStart"></option>
+              <option value="right-end" data-i18n="positionRightEnd"></option>
+            </select>
           </div>
         </div>
       </div>

@@ -1,47 +1,38 @@
 {
-  "extensionName": {
-    "message": "YouTube Rabbit"
-  },
-  "extensionDescription": {
-    "message": "YouTube playback speed control"
-  },
-  "controlInBar": {
-    "message": "Control in YouTube bar"
-  },
-  "controlInBarDesc": {
-    "message": "A speed button is added in the video player control bar."
-  },
-  "changeSpeed": {
-    "message": "Change speed"
-  },
-  "changeSpeedDesc": {
-    "message": "• <span class=\"highlight\">Click</span> on the button to open the menu<br>• Use the <span class=\"highlight\">mouse wheel</span> over the button"
-  },
-  "keyboardShortcuts": {
-    "message": "Keyboard shortcuts"
-  },
-  "increaseSpeed": {
-    "message": "Increase speed"
-  },
-  "decreaseSpeed": {
-    "message": "Decrease speed"
-  },
-  "shortcutNote": {
-    "message": "Note: . and , work only when not typing. Alt+Up/Down work everywhere."
-  },
-  "settings": {
-    "message": "Settings"
-  },
-  "buttonPosition": {
-    "message": "Button position"
-  },
-  "positionLeft": {
-    "message": "Left side"
-  },
-  "positionRightStart": {
-    "message": "Right side (beginning)"
-  },
-  "positionRightEnd": {
-    "message": "Right side (end)"
-  }
+	"extensionName": {
+		"message": "YouTube Rabbit"
+	},
+	"extensionDescription": {
+		"message": "YouTube playback speed control"
+	},
+	"controlInBarDesc1": {
+		"message": "A button is added to the youtube control bar."
+	},
+	"controlInBarDesc2": {
+		"message": "Use the <span class=\"highlight\">wheel</span> to change speed or <span class=\"highlight\">click</span> to select."
+	},
+	"keyboardShortcuts": {
+		"message": "Keyboard shortcuts"
+	},
+	"increaseSpeed": {
+		"message": "Increase speed"
+	},
+	"decreaseSpeed": {
+		"message": "Decrease speed"
+	},
+	"shortcutNote": {
+		"message": "Note: . and , work only when not typing. Alt+Up/Down work everywhere."
+	},
+	"buttonPosition": {
+		"message": "Button position"
+	},
+	"positionLeft": {
+		"message": "Left side"
+	},
+	"positionRightStart": {
+		"message": "Right side (beginning)"
+	},
+	"positionRightEnd": {
+		"message": "Right side (end)"
+	}
 }
