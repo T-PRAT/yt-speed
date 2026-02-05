@@ -8,6 +8,8 @@ let currentSpeed = DEFAULT_SPEED;
 let stepSize = DEFAULT_STEP;
 let speedControlInjected = false;
 let buttonPosition = 'right-start';
+let activeTooltip = null;
+let activeDropdown = null;
 
 function init() {
   findVideoElement();
@@ -141,15 +143,39 @@ function showSpeedIndicator(speed) {
   }, 1500);
 }
 
+function cleanupOrphanedElements() {
+  // Remove tracked tooltip and dropdown
+  if (activeTooltip && activeTooltip.parentNode) {
+    activeTooltip.remove();
+  }
+  if (activeDropdown && activeDropdown.parentNode) {
+    activeDropdown.remove();
+  }
+
+  // Clear references
+  activeTooltip = null;
+  activeDropdown = null;
+
+  // Also remove any orphaned dropdowns (fallback)
+  const dropdowns = document.querySelectorAll('.yt-speed-dropdown');
+  dropdowns.forEach(dd => dd.remove());
+
+  // Remove any orphaned tooltips (fallback)
+  const tooltips = document.querySelectorAll('[style*="z-index: 2147483647"]');
+  tooltips.forEach(tt => {
+    const text = tt.textContent;
+    if (text === 'Scroll to change speed') {
+      tt.remove();
+    }
+  });
+}
+
 function repositionButton() {
   try {
+    cleanupOrphanedElements();
     const existingControl = document.querySelector('.yt-speed-control');
     if (existingControl) {
       existingControl.remove();
-    }
-    const existingDropdown = document.querySelector('.yt-speed-dropdown');
-    if (existingDropdown) {
-      existingDropdown.remove();
     }
     speedControlInjected = false;
 
@@ -162,7 +188,16 @@ function repositionButton() {
 }
 
 function injectSpeedControl() {
+  // Clean up any orphaned elements first
+  cleanupOrphanedElements();
+
   if (speedControlInjected) return;
+
+  // Verify video element exists before injecting
+  if (!videoElement) {
+    setTimeout(injectSpeedControl, 500);
+    return;
+  }
 
   let controls = null;
   let insertBeforeElement = null;
@@ -264,8 +299,8 @@ function createSpeedControl() {
     z-index: 2147483647;
     font-weight: 500;
     transform: translateX(-50%);
+    opacity: 0;
   `;
-  document.body.appendChild(tooltip);
 
   const updateTooltipPosition = () => {
     const rect = button.getBoundingClientRect();
@@ -283,7 +318,6 @@ function createSpeedControl() {
   });
 
   const dropdown = createSpeedDropdown();
-  document.body.appendChild(dropdown);
 
   button.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -341,6 +375,14 @@ function createSpeedControl() {
       setSpeed(1.0);
     }
   });
+
+  // Store references for cleanup
+  activeTooltip = tooltip;
+  activeDropdown = dropdown;
+
+  // Append to body only after container is successfully added
+  document.body.appendChild(tooltip);
+  document.body.appendChild(dropdown);
 
   return container;
 }
@@ -407,8 +449,17 @@ function closeAllDropdowns() {
 
 function setupMutationObserver() {
   const observer = new MutationObserver(() => {
+    const hadVideo = !!videoElement;
     findVideoElement();
-    if (!speedControlInjected) {
+
+    // If video element disappeared, clean up all UI elements
+    if (hadVideo && !videoElement) {
+      cleanupOrphanedElements();
+      speedControlInjected = false;
+    }
+
+    // Only inject if we have a video and no control is injected
+    if (videoElement && !speedControlInjected) {
       injectSpeedControl();
     }
   });
