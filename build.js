@@ -11,8 +11,7 @@ const FILES_TO_COPY = [
   'background',
   'content',
   'popup',
-  'icons',
-  '_locales'
+  'icons'
 ];
 
 function cleanAndCreateDirs() {

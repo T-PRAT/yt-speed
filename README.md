@@ -1,8 +1,9 @@
-<h1 align="center">YouTube Rabbit</h1>
-
-<p align="center">
-  <img src="icons/icon128.png" alt="YouTube Rabbit Logo" width="128" height="128">
-</p>
+<div align="center">
+	<h1>YouTube Rabbit</h1>
+	<p>
+  	<img src="icons/icon128.png" alt="YouTube Rabbit Logo" width="64">
+	</p>
+</div>
 
 A lightweight browser extension that adds precise playback speed control to YouTube videos. Works on Chrome and Firefox.
 

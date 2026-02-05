@@ -1,9 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "__MSG_extensionName__",
+  "name": "YouTube Rabbit",
   "version": "1.0.0",
-  "description": "__MSG_extensionDescription__",
-  "default_locale": "en",
+  "description": "YouTube playback speed control",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
@@ -48,13 +47,13 @@
       "suggested_key": {
         "default": "Alt+Up"
       },
-      "description": "__MSG_increaseSpeed__"
+      "description": "Increase speed"
     },
     "speed-down": {
       "suggested_key": {
         "default": "Alt+Down"
       },
-      "description": "__MSG_decreaseSpeed__"
+      "description": "Decrease speed"
     }
   }
 }
