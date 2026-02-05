@@ -1,15 +1,33 @@
-const MIN_SPEED = 0.25;
-const MAX_SPEED = 8.0;
-const DEFAULT_SPEED = 1.0;
-const DEFAULT_STEP = 0.25;
+(function() {
+  'use strict';
 
-let videoElement = null;
+  const SELECTORS = {
+    VIDEO_PRIMARY: '#movie_player video',
+    VIDEO_FALLBACK_1: '.html5-main-video',
+    VIDEO_FALLBACK_2: 'video',
+    CONTROLS_LEFT: '.ytp-left-controls',
+    CONTROLS_RIGHT: '.ytp-right-controls',
+    SPEED_CONTROL: '.yt-speed-control',
+    SPEED_DISPLAY: '.yt-speed-control .speed-display',
+    SPEED_DROPDOWN: '.yt-speed-dropdown',
+    SPEED_OPTION: '.yt-speed-option',
+    PLAYER_CONTAINER: '#movie_player'
+  };
+
+  const MIN_SPEED = 0.25;
+  const MAX_SPEED = 8.0;
+  const DEFAULT_SPEED = 1.0;
+  const DEFAULT_STEP = 0.25;
+
+  let videoElement = null;
 let currentSpeed = DEFAULT_SPEED;
 let stepSize = DEFAULT_STEP;
 let speedControlInjected = false;
 let buttonPosition = 'right-start';
 let activeTooltip = null;
 let activeDropdown = null;
+let globalScrollListener = null;
+let globalResizeListener = null;
 
 function init() {
   findVideoElement();
@@ -22,9 +40,9 @@ function init() {
 }
 
 function findVideoElement() {
-  const video = document.querySelector('#movie_player video') ||
-    document.querySelector('.html5-main-video') ||
-    document.querySelector('video');
+  const video = document.querySelector(SELECTORS.VIDEO_PRIMARY) ||
+    document.querySelector(SELECTORS.VIDEO_FALLBACK_1) ||
+    document.querySelector(SELECTORS.VIDEO_FALLBACK_2);
 
   if (video && video !== videoElement) {
     videoElement = video;
@@ -41,6 +59,7 @@ function setupStorage(callback) {
       if (callback) callback();
     });
   } catch (error) {
+    console.error('[YouTube Rabbit] Storage setup failed:', error);
     if (callback) callback();
   }
 }
@@ -52,6 +71,7 @@ function loadSavedSpeed() {
       setSpeed(savedSpeed, false);
     });
   } catch (error) {
+    console.error('[YouTube Rabbit] Failed to load saved speed:', error);
     setSpeed(DEFAULT_SPEED, false);
   }
 }
@@ -60,6 +80,7 @@ function saveSpeed(speed) {
   try {
     chrome.storage.local.set({ speed });
   } catch (error) {
+    console.error('[YouTube Rabbit] Failed to save speed:', error);
   }
 }
 
@@ -90,12 +111,12 @@ function handleSpeedChange() {
 }
 
 function updateSpeedDisplay(speed) {
-  const speedDisplay = document.querySelector('.yt-speed-control .speed-display');
+  const speedDisplay = document.querySelector(SELECTORS.SPEED_DISPLAY);
   if (speedDisplay) {
     speedDisplay.textContent = formatSpeed(speed);
   }
 
-  const options = document.querySelectorAll('.yt-speed-option');
+  const options = document.querySelectorAll(SELECTORS.SPEED_OPTION);
   options.forEach(option => {
     const optionSpeed = parseFloat(option.dataset.speed);
     if (Math.abs(optionSpeed - speed) < 0.01) {
@@ -108,39 +129,6 @@ function updateSpeedDisplay(speed) {
 
 function formatSpeed(speed) {
   return speed === Math.floor(speed) ? `${Math.floor(speed)}x` : `${speed.toFixed(2)}x`;
-}
-
-function showSpeedIndicator(speed) {
-  const existing = document.querySelector('.yt-speed-indicator');
-  if (existing) {
-    existing.remove();
-  }
-
-  const indicator = document.createElement('div');
-  indicator.className = 'yt-speed-indicator';
-  indicator.textContent = `Speed: ${formatSpeed(speed)}`;
-
-  Object.assign(indicator.style, {
-    position: 'fixed',
-    top: '20px',
-    right: '20px',
-    background: 'rgba(0, 0, 0, 0.8)',
-    color: 'white',
-    padding: '12px 20px',
-    borderRadius: '8px',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    zIndex: '999999',
-    transition: 'opacity 0.3s ease',
-    pointerEvents: 'none'
-  });
-
-  document.body.appendChild(indicator);
-
-  setTimeout(() => {
-    indicator.style.opacity = '0';
-    setTimeout(() => indicator.remove(), 300);
-  }, 1500);
 }
 
 function cleanupOrphanedElements() {
@@ -156,24 +144,29 @@ function cleanupOrphanedElements() {
   activeTooltip = null;
   activeDropdown = null;
 
+  // Clean up global event listeners
+  if (globalScrollListener) {
+    document.removeEventListener('scroll', globalScrollListener, true);
+    globalScrollListener = null;
+  }
+  if (globalResizeListener) {
+    window.removeEventListener('resize', globalResizeListener);
+    globalResizeListener = null;
+  }
+
   // Also remove any orphaned dropdowns (fallback)
-  const dropdowns = document.querySelectorAll('.yt-speed-dropdown');
+  const dropdowns = document.querySelectorAll(SELECTORS.SPEED_DROPDOWN);
   dropdowns.forEach(dd => dd.remove());
 
   // Remove any orphaned tooltips (fallback)
-  const tooltips = document.querySelectorAll('[style*="z-index: 2147483647"]');
-  tooltips.forEach(tt => {
-    const text = tt.textContent;
-    if (text === 'Scroll to change speed') {
-      tt.remove();
-    }
-  });
+  const tooltips = document.querySelectorAll('[data-yt-speed-extension="tooltip"]');
+  tooltips.forEach(tt => tt.remove());
 }
 
 function repositionButton() {
   try {
     cleanupOrphanedElements();
-    const existingControl = document.querySelector('.yt-speed-control');
+    const existingControl = document.querySelector(SELECTORS.SPEED_CONTROL);
     if (existingControl) {
       existingControl.remove();
     }
@@ -184,6 +177,7 @@ function repositionButton() {
       injectSpeedControl();
     });
   } catch (error) {
+    console.error('[YouTube Rabbit] Failed to reposition button:', error);
   }
 }
 
@@ -204,19 +198,19 @@ function injectSpeedControl() {
 
   switch (buttonPosition) {
     case 'left':
-      controls = document.querySelector('.ytp-left-controls');
+      controls = document.querySelector(SELECTORS.CONTROLS_LEFT);
       break;
     case 'right-start':
-      controls = document.querySelector('.ytp-right-controls');
+      controls = document.querySelector(SELECTORS.CONTROLS_RIGHT);
       if (controls) {
         insertBeforeElement = controls.firstChild;
       }
       break;
     case 'right-end':
-      controls = document.querySelector('.ytp-right-controls');
+      controls = document.querySelector(SELECTORS.CONTROLS_RIGHT);
       break;
     default:
-      controls = document.querySelector('.ytp-right-controls');
+      controls = document.querySelector(SELECTORS.CONTROLS_RIGHT);
       if (controls) {
         insertBeforeElement = controls.firstChild;
       }
@@ -227,7 +221,7 @@ function injectSpeedControl() {
     return;
   }
 
-  if (controls.querySelector('.yt-speed-control')) {
+  if (controls.querySelector(SELECTORS.SPEED_CONTROL)) {
     speedControlInjected = true;
     return;
   }
@@ -253,29 +247,11 @@ function injectSpeedControl() {
 
 function createSpeedControl() {
   const container = document.createElement('div');
-  container.className = 'yt-speed-control ytp-button';
-  container.style.cssText = `
-    position: relative;
-    display: inline-flex;
-    margin-right: 8px;
-  `;
+  container.className = 'yt-speed-control';
 
   const button = document.createElement('button');
   button.className = 'ytp-button';
   button.setAttribute('aria-label', 'Playback Speed');
-  button.style.cssText = `
-    background: none;
-    border: none;
-    color: #fff;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: auto;
-  `;
 
   const speedDisplay = document.createElement('span');
   speedDisplay.className = 'speed-display';
@@ -286,21 +262,7 @@ function createSpeedControl() {
 
   const tooltip = document.createElement('div');
   tooltip.textContent = 'Scroll to change speed';
-  tooltip.style.cssText = `
-    position: fixed;
-    background: rgba(0, 0, 0, 0.4);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 12px;
-    white-space: nowrap;
-    pointer-events: none;
-    transition: opacity 0.2s;
-    z-index: 2147483647;
-    font-weight: 500;
-    transform: translateX(-50%);
-    opacity: 0;
-  `;
+  tooltip.dataset.ytSpeedExtension = 'tooltip';
 
   const updateTooltipPosition = () => {
     const rect = button.getBoundingClientRect();
@@ -343,13 +305,20 @@ function createSpeedControl() {
     }
   });
 
-  document.addEventListener('scroll', () => {
-    closeAllDropdowns();
-  }, true);
+  // Clean up previous global listeners if they exist
+  if (globalScrollListener) {
+    document.removeEventListener('scroll', globalScrollListener, true);
+  }
+  if (globalResizeListener) {
+    window.removeEventListener('resize', globalResizeListener);
+  }
 
-  window.addEventListener('resize', () => {
-    closeAllDropdowns();
-  });
+  // Create and store new listeners
+  globalScrollListener = () => closeAllDropdowns();
+  globalResizeListener = () => closeAllDropdowns();
+
+  document.addEventListener('scroll', globalScrollListener, true);
+  window.addEventListener('resize', globalResizeListener);
 
   button.addEventListener('wheel', (e) => {
     e.preventDefault();
@@ -390,19 +359,6 @@ function createSpeedControl() {
 function createSpeedDropdown() {
   const dropdown = document.createElement('div');
   dropdown.className = 'yt-speed-dropdown';
-  dropdown.style.cssText = `
-    display: none;
-    position: fixed;
-    transform: translateY(-100%);
-    margin-bottom: 6px;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 4px;
-    min-width: 80px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.8);
-    z-index: 2147483647;
-  `;
 
   const speeds = [8, 4, 3, 2.5, 2, 1.75, 1.5, 1.25, 1, 0.75, 0.5, 0.25];
 
@@ -411,23 +367,6 @@ function createSpeedDropdown() {
     option.className = 'yt-speed-option';
     option.dataset.speed = speed;
     option.textContent = formatSpeed(speed);
-    option.style.cssText = `
-      padding: 6px 12px;
-      cursor: pointer;
-      font-size: 14px;
-      border-radius: 4px;
-      transition: background 0.2s;
-      text-align: center;
-      color: white;
-    `;
-
-    option.addEventListener('mouseenter', () => {
-      option.style.background = 'rgba(255, 255, 255, 0.1)';
-    });
-
-    option.addEventListener('mouseleave', () => {
-      option.style.background = 'transparent';
-    });
 
     option.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -442,7 +381,7 @@ function createSpeedDropdown() {
 }
 
 function closeAllDropdowns() {
-  document.querySelectorAll('.yt-speed-dropdown').forEach(dd => {
+  document.querySelectorAll(SELECTORS.SPEED_DROPDOWN).forEach(dd => {
     dd.style.display = 'none';
   });
 }
@@ -464,7 +403,9 @@ function setupMutationObserver() {
     }
   });
 
-  observer.observe(document.body, {
+  // Target the player container instead of entire document for better performance
+  const playerContainer = document.querySelector(SELECTORS.PLAYER_CONTAINER) || document.body;
+  observer.observe(playerContainer, {
     childList: true,
     subtree: true
   });
@@ -530,3 +471,5 @@ if (document.readyState === 'loading') {
 } else {
   init();
 }
+
+})();

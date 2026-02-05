@@ -66,7 +66,7 @@ function buildManifest(browser) {
   if (browser === 'firefox' && !manifest.browser_specific_settings) {
     manifest.browser_specific_settings = {
       gecko: {
-        id: 'ytspeed@example.com',
+        id: 'youtuberabbit@tprat',
         strict_min_version: '109.0'
       }
     };

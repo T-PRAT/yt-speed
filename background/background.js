@@ -7,7 +7,26 @@ async function handleCommand(command) {
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-    if (!tab || !tab.url.includes('youtube.com')) {
+    if (!tab || !tab.url) {
+      return;
+    }
+
+    // Check if URL is a YouTube URL (supports all TLDs and youtu.be short URLs)
+    let isYouTubeUrl = false;
+    try {
+      const url = new URL(tab.url);
+      const hostname = url.hostname.toLowerCase();
+
+      if (hostname.endsWith('youtube.com') ||
+          hostname.endsWith('youtu.be') ||
+          hostname.startsWith('youtube.')) {
+        isYouTubeUrl = true;
+      }
+    } catch (e) {
+      return;
+    }
+
+    if (!isYouTubeUrl) {
       return;
     }
 

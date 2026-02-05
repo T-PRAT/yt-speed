@@ -5,7 +5,7 @@
   "description": "YouTube playback speed control",
   "browser_specific_settings": {
     "gecko": {
-      "id": "youtuberabbit@example.com",
+      "id": "youtuberabbit@tprat",
       "strict_min_version": "109.0"
     }
   },
@@ -33,6 +33,7 @@
         "https://m.youtube.com/*"
       ],
       "js": ["content/content.js"],
+      "css": ["content/content.css"],
       "run_at": "document_idle"
     }
   ],

@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
           try {
             chrome.tabs.reload(tabs[0].id);
           } catch (error) {
+            console.error('[YouTube Rabbit] Failed to reload tab:', error);
           }
         }
       });
